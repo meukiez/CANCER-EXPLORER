@@ -414,13 +414,6 @@ us *what changed*.
   to low oxygen.
 - **Kaplan-Meier curve**: shows what fraction of patients are still alive over time.
 
-### Things to try
-1. In **Kidney**, look up **CA9**. Why would a tumor act as if it has no oxygen?
-2. In **Lung**, look up **SFTPC**. What happens to a cell's "identity" in cancer?
-3. In **Breast**, compare **ERBB2** and **ESR1**: why are there several kinds of breast cancer?
-4. Check the **Pathways** tab: which processes go up in *every* cancer?
-5. Use **Compare cancers** to find genes that change in all three.
-
 ### Important limitations
 - TCGA "normal" samples come from tissue **next to** the tumor, not from healthy people.
 - A gene that changes is not necessarily a **cause** of the cancer; it could be an effect.
