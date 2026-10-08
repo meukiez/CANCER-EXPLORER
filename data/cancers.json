@@ -1,0 +1,5 @@
+{
+  "BRCA": "Breast invasive carcinoma",
+  "KIRC": "Kidney renal clear cell carcinoma",
+  "LUAD": "Lung adenocarcinoma"
+}
