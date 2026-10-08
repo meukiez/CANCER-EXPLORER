@@ -17,7 +17,7 @@ import streamlit as st
 import analysis as an
 from genes_info import EXAMPLES, GENE_NOTES
 
-st.set_page_config(page_title="Cancer Gene Explorer", page_icon="🧬", layout="wide")
+st.set_page_config(page_title="Cancer Gene Explorer", layout="wide")
 
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 COLORS = {"Up in tumor": "#d1495b", "Down in tumor": "#2e86ab", "Not significant": "#c8c8c8",
