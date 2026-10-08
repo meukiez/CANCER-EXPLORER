@@ -1,8 +1,6 @@
 """
-Cancer Gene Explorer - an interactive tool for exploring how gene activity
-differs between tumors and normal tissue, using real TCGA data.
+Cancer Explorer - an interactive site for exploring how gene activity differs between tumors and normal tissue, using TCGA data.
 
-Run with:  streamlit run app.py
 """
 
 import json
@@ -395,14 +393,10 @@ with tabs[4]:
 
 # ---------------------------------------------------------------- Learn
 with tabs[5]:
-    st.header("Learn: how to read this app")
+    st.header("About this site")
     st.markdown("""
-### The big idea
-Every cell in your body has the same DNA, but each cell **switches genes on and off**
-differently. A lung cell switches on lung genes; a dividing cell switches on cell-division genes.
-**RNA sequencing** measures how "switched on" each of ~20,000 genes is by counting its RNA
-messages. Cancer cells change which genes are on, and comparing tumors to normal tissue shows
-us *what changed*.
+### What is cancer?
+Every cell in your body has the same DNA, but each cell switches genes on and off differently. A lung cell switches on lung genes; a dividing cell switches on cell-division genes. RNA sequencing measures how "switched on" each of ~20,000 genes is by counting its RNA messages. Cancer cells change which genes are on, and comparing tumors to normal tissue shows us what changed.
 
 ### Key terms
 - **Differential expression**: a gene is used more (or less) in tumors than in normal tissue.
@@ -415,21 +409,16 @@ us *what changed*.
 - **Kaplan-Meier curve**: shows what fraction of patients are still alive over time.
 
 ### Important limitations
-- TCGA "normal" samples come from tissue **next to** the tumor, not from healthy people.
-- A gene that changes is not necessarily a **cause** of the cancer; it could be an effect.
+- TCGA "normal" samples come from tissue next to the tumor, not from healthy people.
+- A gene that changes is not necessarily a cause of the cancer; it could be an effect.
 - Tumors are a mix of cancer cells, immune cells and support cells, and all of them contribute RNA.
-- Some key cancer genes (like **TP53**) are damaged by **mutation**, which RNA levels can miss.
+- Some key cancer genes are damaged by mutation, which RNA levels can miss.
 - Survival plots show associations and don't account for age, stage or treatment.
-- This app is for learning, **not** for medical decisions.
+- This app is for learning, NOT for medical decisions.
 
 ### Methods
-Data: TCGA RNA-seq (STAR gene counts) and overall survival from the UCSC Xena GDC hub. Primary
-tumors (up to 200, randomly chosen) were compared with solid-tissue normals using
-**PyDESeq2** (a Python version of DESeq2). Pathway analysis is an over-representation test on
-gene sets from Enrichr (MSigDB Hallmark, KEGG, Reactome, GO).
+Data: TCGA RNA-seq (STAR gene counts) and overall survival from the UCSC Xena GDC hub. Primary tumors (up to 200, randomly chosen) were compared with solid-tissue normals using PyDESeq2 (a Python version of DESeq2). Pathway analysis is an over-representation test on gene sets from Enrichr (MSigDB Hallmark, KEGG, Reactome, GO).
 
 ### About
-Built by Charlene Siawira as an independent project. Code on
-[GitHub](https://github.com/your-username/cancer-gene-explorer). Inspired by professional tools
-such as GEPIA2 and UALCAN, but designed for learners.
+Inspired by professional tools such as GEPIA2 and UALCAN. Built only for learning purposes.
 """)
