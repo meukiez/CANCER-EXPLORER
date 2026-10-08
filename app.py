@@ -74,7 +74,7 @@ if not cancers:
 
 # ---------------------------------------------------------------- sidebar
 with st.sidebar:
-    st.title("🧬 Cancer Gene Explorer")
+    st.title("Cancer Gene Explorer")
     code = st.selectbox("Cancer type", list(cancers), format_func=lambda c: f"{cancers[c]} ({c})")
     st.markdown("**What counts as a 'changed' gene?**")
     padj_cut = st.select_slider("Significance cutoff (adjusted p-value)",
@@ -126,7 +126,7 @@ with tabs[0]:
         st.plotly_chart(fig, width="stretch")
         with st.expander("What am I looking at?"):
             st.markdown(
-                "Each dot is one person's sample. **PCA** squeezes thousands of genes into two "
+                "Each dot is one person's sample. PCA squeezes thousands of genes into two "
                 "axes that capture the biggest differences between samples. If tumor and normal "
                 "dots form separate clouds, their overall gene activity is very different.")
     with right:
@@ -334,7 +334,7 @@ with tabs[3]:
         with st.expander("How does this work?"):
             st.markdown(
                 "For each pathway we count how many of its genes are in our 'changed' list, then "
-                "use a **hypergeometric test** to ask how likely that overlap would be if we had "
+                "use a hypergeometric test to ask how likely that overlap would be if we had "
                 "picked genes at random. Because we test hundreds of pathways, p-values are "
                 "adjusted (Benjamini-Hochberg) to avoid false alarms. This is the same idea used "
                 "by tools like Enrichr and DAVID.")
