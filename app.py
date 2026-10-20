@@ -1,8 +1,13 @@
 """
+<<<<<<< HEAD
 Cancer Gene Explorer - an interactive tool for exploring how gene activity
 differs between tumors and normal tissue, using real TCGA data.
 
 Run with:  streamlit run app.py
+=======
+Cancer Explorer - an interactive site for exploring how gene activity differs between tumors and normal tissue, using TCGA data.
+
+>>>>>>> e6747d96e5d679f63505dd0d562c7b7dc818bedb
 """
 
 import json
@@ -17,7 +22,11 @@ import streamlit as st
 import analysis as an
 from genes_info import EXAMPLES, GENE_NOTES
 
+<<<<<<< HEAD
 st.set_page_config(page_title="Cancer Gene Explorer", page_icon="🧬", layout="wide")
+=======
+st.set_page_config(page_title="Cancer Gene Explorer", layout="wide")
+>>>>>>> e6747d96e5d679f63505dd0d562c7b7dc818bedb
 
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 COLORS = {"Up in tumor": "#d1495b", "Down in tumor": "#2e86ab", "Not significant": "#c8c8c8",
@@ -76,7 +85,11 @@ if not cancers:
 
 # ---------------------------------------------------------------- sidebar
 with st.sidebar:
+<<<<<<< HEAD
     st.title("🧬 Cancer Gene Explorer")
+=======
+    st.title("Cancer Gene Explorer")
+>>>>>>> e6747d96e5d679f63505dd0d562c7b7dc818bedb
     code = st.selectbox("Cancer type", list(cancers), format_func=lambda c: f"{cancers[c]} ({c})")
     st.markdown("**What counts as a 'changed' gene?**")
     padj_cut = st.select_slider("Significance cutoff (adjusted p-value)",
@@ -128,7 +141,11 @@ with tabs[0]:
         st.plotly_chart(fig, width="stretch")
         with st.expander("What am I looking at?"):
             st.markdown(
+<<<<<<< HEAD
                 "Each dot is one person's sample. **PCA** squeezes thousands of genes into two "
+=======
+                "Each dot is one person's sample. PCA squeezes thousands of genes into two "
+>>>>>>> e6747d96e5d679f63505dd0d562c7b7dc818bedb
                 "axes that capture the biggest differences between samples. If tumor and normal "
                 "dots form separate clouds, their overall gene activity is very different.")
     with right:
@@ -336,7 +353,11 @@ with tabs[3]:
         with st.expander("How does this work?"):
             st.markdown(
                 "For each pathway we count how many of its genes are in our 'changed' list, then "
+<<<<<<< HEAD
                 "use a **hypergeometric test** to ask how likely that overlap would be if we had "
+=======
+                "use a hypergeometric test to ask how likely that overlap would be if we had "
+>>>>>>> e6747d96e5d679f63505dd0d562c7b7dc818bedb
                 "picked genes at random. Because we test hundreds of pathways, p-values are "
                 "adjusted (Benjamini-Hochberg) to avoid false alarms. This is the same idea used "
                 "by tools like Enrichr and DAVID.")
@@ -395,6 +416,7 @@ with tabs[4]:
 
 # ---------------------------------------------------------------- Learn
 with tabs[5]:
+<<<<<<< HEAD
     st.header("Learn: how to read this app")
     st.markdown("""
 ### The big idea
@@ -403,6 +425,12 @@ differently. A lung cell switches on lung genes; a dividing cell switches on cel
 **RNA sequencing** measures how "switched on" each of ~20,000 genes is by counting its RNA
 messages. Cancer cells change which genes are on, and comparing tumors to normal tissue shows
 us *what changed*.
+=======
+    st.header("About this site")
+    st.markdown("""
+### What is cancer?
+Every cell in your body has the same DNA, but each cell switches genes on and off differently. A lung cell switches on lung genes; a dividing cell switches on cell-division genes. RNA sequencing measures how "switched on" each of ~20,000 genes is by counting its RNA messages. Cancer cells change which genes are on, and comparing tumors to normal tissue shows us what changed.
+>>>>>>> e6747d96e5d679f63505dd0d562c7b7dc818bedb
 
 ### Key terms
 - **Differential expression**: a gene is used more (or less) in tumors than in normal tissue.
@@ -414,6 +442,7 @@ us *what changed*.
   to low oxygen.
 - **Kaplan-Meier curve**: shows what fraction of patients are still alive over time.
 
+<<<<<<< HEAD
 ### Things to try
 1. In **Kidney**, look up **CA9**. Why would a tumor act as if it has no oxygen?
 2. In **Lung**, look up **SFTPC**. What happens to a cell's "identity" in cancer?
@@ -439,4 +468,19 @@ gene sets from Enrichr (MSigDB Hallmark, KEGG, Reactome, GO).
 Built by Charlene Siawira as an independent project. Code on
 [GitHub](https://github.com/your-username/cancer-gene-explorer). Inspired by professional tools
 such as GEPIA2 and UALCAN, but designed for learners.
+=======
+### Important limitations
+- TCGA "normal" samples come from tissue next to the tumor, not from healthy people.
+- A gene that changes is not necessarily a cause of the cancer; it could be an effect.
+- Tumors are a mix of cancer cells, immune cells and support cells, and all of them contribute RNA.
+- Some key cancer genes are damaged by mutation, which RNA levels can miss.
+- Survival plots show associations and don't account for age, stage or treatment.
+- This app is for learning, NOT for medical decisions.
+
+### Methods
+Data: TCGA RNA-seq (STAR gene counts) and overall survival from the UCSC Xena GDC hub. Primary tumors (up to 200, randomly chosen) were compared with solid-tissue normals using PyDESeq2 (a Python version of DESeq2). Pathway analysis is an over-representation test on gene sets from Enrichr (MSigDB Hallmark, KEGG, Reactome, GO).
+
+### About
+Inspired by professional tools such as GEPIA2 and UALCAN. Built only for learning purposes.
+>>>>>>> e6747d96e5d679f63505dd0d562c7b7dc818bedb
 """)

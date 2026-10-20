@@ -1,8 +1,12 @@
 {
   "BRCA": "Breast invasive carcinoma",
   "KIRC": "Kidney renal clear cell carcinoma",
+<<<<<<< HEAD
   "LUAD": "Lung adenocarcinoma",
   "COAD": "Colon adenocarcinoma",
   "PRAD": "Prostate Adenocarcinoma",
   "LIHC": "Liver Hepatocellular Carcinoma"
+=======
+  "LUAD": "Lung adenocarcinoma"
+>>>>>>> e6747d96e5d679f63505dd0d562c7b7dc818bedb
 }
