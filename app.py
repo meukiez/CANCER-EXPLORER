@@ -17,11 +17,7 @@ import streamlit as st
 import analysis as an
 from genes_info import EXAMPLES, GENE_NOTES
 
-<<<<<<< HEAD
 st.set_page_config(page_title="Cancer Gene Explorer", page_icon="🧬", layout="wide")
-=======
-st.set_page_config(page_title="Cancer Gene Explorer", layout="wide")
->>>>>>> e6747d96e5d679f63505dd0d562c7b7dc818bedb
 
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 COLORS = {"Up in tumor": "#d1495b", "Down in tumor": "#2e86ab", "Not significant": "#c8c8c8",
@@ -80,11 +76,7 @@ if not cancers:
 
 # ---------------------------------------------------------------- sidebar
 with st.sidebar:
-<<<<<<< HEAD
     st.title("🧬 Cancer Gene Explorer")
-=======
-    st.title("Cancer Gene Explorer")
->>>>>>> e6747d96e5d679f63505dd0d562c7b7dc818bedb
     code = st.selectbox("Cancer type", list(cancers), format_func=lambda c: f"{cancers[c]} ({c})")
     st.markdown("**What counts as a 'changed' gene?**")
     padj_cut = st.select_slider("Significance cutoff (adjusted p-value)",
@@ -136,11 +128,7 @@ with tabs[0]:
         st.plotly_chart(fig, width="stretch")
         with st.expander("What am I looking at?"):
             st.markdown(
-<<<<<<< HEAD
                 "Each dot is one person's sample. **PCA** squeezes thousands of genes into two "
-=======
-                "Each dot is one person's sample. PCA squeezes thousands of genes into two "
->>>>>>> e6747d96e5d679f63505dd0d562c7b7dc818bedb
                 "axes that capture the biggest differences between samples. If tumor and normal "
                 "dots form separate clouds, their overall gene activity is very different.")
     with right:
