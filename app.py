@@ -36,36 +36,18 @@ def load_cancers():
 
 @st.cache_data
 def load_de(code):
-    path = os.path.join(DATA, code.lower(), "de_results.parquet")
-    de = pd.read_parquet(path).dropna(subset=["padj"])
-    if "gene" in de.columns:
-        de = de.set_index("gene")
-    elif "gene_id" in de.columns:
-        de = de.set_index("gene_id")
-    elif "index" in de.columns:
-        de = de.set_index("index")
-    else:
-        de.index.name = "gene"
+    de = pd.read_parquet(os.path.join(DATA, code.lower(), "de_results.parquet")).dropna(subset=["padj"])
     de["neg_log10_padj"] = -np.log10(de["padj"].clip(lower=1e-300))
-    return de
-
+    return de.set_index("gene")
 
 @st.cache_resource
 def load_expression(code):
-    path = os.path.join(DATA, code.lower(), "expression.parquet")
-    e = pd.read_parquet(path)
-    if "sample" in e.columns:
-        e = e.set_index("sample")
+    e = pd.read_parquet(os.path.join(DATA, code.lower(), "expression.parquet")).set_index("sample")
     return e.astype(np.float32)
-
 
 @st.cache_data
 def load_samples(code):
-    path = os.path.join(DATA, code.lower(), "samples.parquet")
-    s = pd.read_parquet(path)
-    if "sample" in s.columns:
-        s = s.set_index("sample")
-    return s
+    return pd.read_parquet(os.path.join(DATA, code.lower(), "samples.parquet")).set_index("sample")
 
 
 @st.cache_data
