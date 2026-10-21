@@ -71,6 +71,18 @@ GENE_DESCRIPTIONS = {
     "CDKN2A": "Encodes the p16(INK4a) and p14(ARF) tumor suppressors, regulating CDK4/6-dependent cell cycle progression and p53 stability."
 }
 
+EXAMPLES = {
+    "BRCA": ["TP53", "ERBB2", "ESR1", "BRCA1"],
+    "KIRC": ["VHL", "PBRM1", "SETD2"],
+    "LUAD": ["EGFR", "KRAS", "ALK"],
+    "COAD": ["APC", "KRAS", "TP53"],
+    "PRAD": ["AR", "PTEN", "ERG"],
+    "LIHC": ["TP53", "CTNNB1", "ALB"],
+    "SKCM": ["BRAF", "NRAS", "CDKN2A"],
+    "UCEC": ["PTEN", "PIK3CA", "ARID1A"],
+    "THCA": ["BRAF", "NRAS", "RET"]
+}
+
 def get_gene_description(gene_symbol):
     """Returns plain-language summary for known genes or a fallback default message."""
     return GENE_DESCRIPTIONS.get(
