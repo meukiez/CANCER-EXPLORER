@@ -4,5 +4,8 @@
   "LUAD": "Lung adenocarcinoma",
   "COAD": "Colon adenocarcinoma",
   "PRAD": "Prostate Adenocarcinoma",
-  "LIHC": "Liver Hepatocellular Carcinoma"
+  "LIHC": "Liver Hepatocellular Carcinoma",
+  "SKCM": "Skin Cutaneous Melanoma",
+  "UCEC": "Uterine Corpus Endometrial Carcinoma",
+  "THCA": "Thyroid Carcinoma"
 }
