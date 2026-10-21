@@ -15,7 +15,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 import analysis as an
-from genes_info import EXAMPLES, GENE_NOTES
+from genes_info import CAN_INFO, GENE_DESCRIPTIONS, get_gene_description
 
 st.set_page_config(page_title="Cancer Gene Explorer", page_icon="🧬", layout="wide")
 
