@@ -77,3 +77,6 @@ def get_gene_description(gene_symbol):
         gene_symbol.upper(),
         f"**{gene_symbol}** is an active human gene monitored in TCGA differential expression datasets."
     )
+
+EXAMPLES = {} 
+GENE_NOTES = GENE_DESCRIPTIONS
