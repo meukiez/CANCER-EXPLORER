@@ -54,7 +54,7 @@ def download_tcga_data(cancer_code, raw_dir="raw_downloads"):
 
     return counts_path, surv_path
 
-def process_cancer(cancer_code, data_dir="data", max_tumor_samples=200):
+def process_cancer(cancer_code, data_dir="data", max_tumor_samples=50):
     """Processes raw counts into differential expression and survival parquet files."""
     cancer_out_dir = os.path.join(data_dir, cancer_code.lower())
     os.makedirs(cancer_out_dir, exist_ok=True)
