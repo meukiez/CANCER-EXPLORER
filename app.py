@@ -35,6 +35,13 @@ def load_cancers():
 
 
 @st.cache_data
+def load_de(code):
+    de = pd.read_parquet(os.path.join(DATA, code, "de_results.parquet")).dropna(subset=["padj"])
+    de["neg_log10_padj"] = -np.log10(de["padj"].clip(lower=1e-300))
+    return de.set_index("gene")
+
+
+@st.cache_data
 def load_de(cancer_code):
     # Load your parquet file path here (keep whatever path logic you already have)
     path = f"data/{cancer_code}_de.parquet" # (or whatever your path format is)
