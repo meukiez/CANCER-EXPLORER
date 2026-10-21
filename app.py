@@ -35,10 +35,26 @@ def load_cancers():
 
 
 @st.cache_data
-def load_de(code):
-    de = pd.read_parquet(os.path.join(DATA, code, "de_results.parquet")).dropna(subset=["padj"])
-    de["neg_log10_padj"] = -np.log10(de["padj"].clip(lower=1e-300))
-    return de.set_index("gene")
+def load_de(cancer_code):
+    # Load your parquet file path here (keep whatever path logic you already have)
+    path = f"data/{cancer_code}_de.parquet" # (or whatever your path format is)
+    de = pd.read_parquet(path)
+    
+    # Automatically find the gene column regardless of casing
+    possible_cols = ["gene", "Gene", "GENE", "symbol", "Symbol", "gene_symbol"]
+    gene_col = next((col for col in possible_cols if col in de.columns), None)
+    
+    if gene_col:
+        de = de.set_index(gene_col)
+    else:
+        # Fallback: if the index itself is already the genes
+        if de.index.name in possible_cols or de.index.dtype == 'object':
+            pass 
+        else:
+            # If all else fails, use the first column
+            de = de.set_index(de.columns[0])
+            
+    return de
 
 
 @st.cache_resource
