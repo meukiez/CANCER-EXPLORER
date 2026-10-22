@@ -44,6 +44,15 @@ streamlit run app.py
 ```
 It opens in your browser at http://localhost:8501.
 
+### Troubleshooting missing or repeated cohort data
+
+The app reads each cohort from its own folder in `data/`, and the folders may use
+either uppercase or lowercase cancer codes. Keep the cohort parquet files together
+with `data/gene_map.parquet`; the map converts the Ensembl IDs in the files to gene
+symbols so gene lookup, pathway enrichment, and cross-cancer comparisons can work.
+If required files are missing, run `python prepare_data.py` again. The app reports a
+missing file instead of substituting sample data.
+
 ---
 
 ## Put it online for free (Streamlit Community Cloud)

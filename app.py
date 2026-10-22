@@ -25,6 +25,66 @@ COLORS = {"Up in tumor": "#d1495b", "Down in tumor": "#2e86ab", "Not significant
 
 
 # ---------------------------------------------------------------- data loading
+def cancer_data_file(code, filename):
+    """Find a cohort folder case-insensitively, preferring the lowercase convention."""
+    folders = [
+        entry.path for entry in os.scandir(DATA)
+        if entry.is_dir() and entry.name.casefold() == code.casefold()
+    ]
+    folders.sort(key=lambda path: (os.path.basename(path) != code.lower(), path))
+    for folder in folders:
+        path = os.path.join(folder, filename)
+        if os.path.isfile(path):
+            return path
+
+    if folders:
+        raise FileNotFoundError(
+            f"Missing {filename} for {code} in {', '.join(folders)}. "
+            "Run `python prepare_data.py` to prepare the cohort."
+        )
+    raise FileNotFoundError(
+        f"No data folder found for {code} in {DATA}. "
+        "Run `python prepare_data.py` to prepare the cohort."
+    )
+
+
+def find_column(frame, *names):
+    """Return the original column label matching one of the given names."""
+    normalized = {str(column).strip().casefold(): column for column in frame.columns}
+    return next((normalized[name.casefold()] for name in names if name.casefold() in normalized), None)
+
+
+@st.cache_data
+def load_gene_map():
+    path = os.path.join(DATA, "gene_map.parquet")
+    if not os.path.isfile(path):
+        raise FileNotFoundError(
+            f"Gene symbol map not found at {path}. "
+            "Run `python prepare_data.py` to generate app data."
+        )
+
+    mapping = pd.read_parquet(path, columns=["Ensembl_ID", "gene"]).dropna()
+    ids = mapping["Ensembl_ID"].astype(str)
+    symbols = mapping["gene"].astype(str).str.strip()
+    symbols = symbols.where(symbols.ne(""), ids)
+    duplicate_symbols = symbols.duplicated(keep="first")
+    symbols.loc[duplicate_symbols] += " [" + ids.loc[duplicate_symbols] + "]"
+
+    gene_map = {}
+    for ensembl_id, symbol in zip(ids, symbols):
+        gene_map[ensembl_id] = symbol
+        gene_map.setdefault(ensembl_id.split(".", 1)[0], symbol)
+    return gene_map
+
+
+def gene_labels(identifiers, mapping):
+    labels = []
+    for identifier in identifiers:
+        identifier = str(identifier)
+        labels.append(mapping.get(identifier, mapping.get(identifier.split(".", 1)[0], identifier)))
+    return labels
+
+
 @st.cache_data
 def load_cancers():
     path = os.path.join(DATA, "cancers.json")
@@ -47,65 +107,86 @@ def load_cancers():
 
 @st.cache_data
 def load_de(code):
-    path = os.path.join(DATA, code.lower(), "de_results.parquet")
-    try:
-        de = pd.read_parquet(path).dropna(subset=["padj"])
-    except Exception:
-        # Fallback mock data if parquet is missing on cloud
-        genes = ["TP53", "EGFR", "BRCA1", "PTEN", "KRAS", "PIK3CA", "BRAF", "ERBB2", "ESR1", "APC", "VHL", "AR"]
-        np.random.seed(42)
-        de = pd.DataFrame({
-            "gene": genes,
-            "baseMean": [1500.0] * len(genes),
-            "log2FC": np.random.uniform(-3, 3, len(genes)),
-            "pvalue": [1e-5] * len(genes),
-            "padj": [1e-4] * len(genes)
-        })
-    
-    if "gene" in de.columns:
-        de = de.set_index("gene")
-    elif "gene_id" in de.columns:
-        de = de.set_index("gene_id")
-    elif de.index.name not in ["gene", "gene_id"]:
-        de.index.name = "gene"
-        
+    de = pd.read_parquet(cancer_data_file(code, "de_results.parquet"))
+    gene_column = find_column(
+        de, "gene", "gene_id", "ensembl_id", "index", "unnamed: 0"
+    )
+    if gene_column is not None:
+        identifiers = de.pop(gene_column)
+    elif str(de.index.name).strip().casefold() in ("gene", "gene_id", "ensembl_id"):
+        identifiers = de.index
+    elif not isinstance(de.index, pd.RangeIndex):
+        identifiers = de.index
+    else:
+        raise ValueError(f"DE results for {code} do not contain a recognized gene identifier.")
+
+    de.index = gene_labels(identifiers, load_gene_map())
+    de.index.name = "gene"
+    if "log2FC" not in de.columns and "log2FoldChange" in de.columns:
+        de = de.rename(columns={"log2FoldChange": "log2FC"})
+
+    required = {"baseMean", "log2FC", "pvalue", "padj"}
+    missing = required.difference(de.columns)
+    if missing:
+        raise ValueError(f"DE results for {code} are missing required columns: {sorted(missing)}")
+
+    de = de.dropna(subset=["padj"])
+    if de.empty:
+        raise ValueError(f"DE results for {code} contain no rows with adjusted p-values.")
+    if de.index.has_duplicates:
+        raise ValueError(f"DE results for {code} contain duplicate gene labels.")
     de["neg_log10_padj"] = -np.log10(de["padj"].clip(lower=1e-300))
     return de
 
 
 @st.cache_resource
 def load_expression(code):
-    path = os.path.join(DATA, code.lower(), "expression.parquet")
-    try:
-        e = pd.read_parquet(path)
-        if "sample" in e.columns:
-            e = e.set_index("sample")
-        return e.astype(np.float32)
-    except Exception:
-        # Fallback mock expression matrix
-        samples_list = [f"Sample_{i}" for i in range(20)]
-        genes = ["TP53", "EGFR", "BRCA1", "PTEN", "KRAS", "PIK3CA", "BRAF", "ERBB2", "ESR1", "APC", "VHL", "AR"]
-        np.random.seed(42)
-        e = pd.DataFrame(np.random.randn(len(samples_list), len(genes)), index=samples_list, columns=genes)
-        return e.astype(np.float32)
+    e = pd.read_parquet(cancer_data_file(code, "expression.parquet"))
+    sample_column = find_column(e, "sample", "sample_id")
+    if sample_column is not None:
+        e = e.set_index(sample_column)
+    elif isinstance(e.index, pd.RangeIndex):
+        raise ValueError(f"Expression data for {code} do not contain sample IDs.")
+    e.index = e.index.astype(str)
+    if e.index.has_duplicates:
+        raise ValueError(f"Expression data for {code} contain duplicate sample IDs.")
+
+    e.columns = gene_labels(e.columns, load_gene_map())
+    if e.columns.has_duplicates:
+        raise ValueError(f"Expression data for {code} contain duplicate gene labels.")
+    return e.astype(np.float32)
 
 
 @st.cache_data
 def load_samples(code):
-    path = os.path.join(DATA, code.lower(), "samples.parquet")
-    try:
-        s = pd.read_parquet(path)
-        if "sample" in s.columns:
-            s = s.set_index("sample")
-        return s
-    except Exception:
-        samples_list = [f"Sample_{i}" for i in range(20)]
-        types = ["Tumor"] * 10 + ["Normal"] * 10
-        return pd.DataFrame({
-            "type": types,
-            "OS": [1, 0, 1, 1, 0, 1, 0, 1, 1, 0] * 2,
-            "OS.time": [500, 300, 800, 400, 200, 600, 700, 350, 450, 600] * 2
-        }, index=samples_list)
+    s = pd.read_parquet(cancer_data_file(code, "samples.parquet"))
+    sample_column = find_column(s, "sample", "sample_id")
+    if sample_column is not None:
+        s = s.set_index(sample_column)
+    elif isinstance(s.index, pd.RangeIndex):
+        raise ValueError(f"Survival metadata for {code} do not contain sample IDs.")
+    s.index = s.index.astype(str)
+    if s.index.has_duplicates:
+        raise ValueError(f"Survival metadata for {code} contain duplicate sample IDs.")
+
+    expression_samples = load_expression(code).index
+    s = s.reindex(expression_samples)
+    if "type" not in s.columns:
+        s["type"] = pd.NA
+    missing_type = s["type"].isna()
+    barcode_types = {}
+    for sample in s.index[missing_type]:
+        parts = sample.split("-")
+        sample_type = parts[3][:2] if len(parts) > 3 else ""
+        if sample_type == "01":
+            barcode_types[sample] = "Tumor"
+        elif sample_type == "11":
+            barcode_types[sample] = "Normal"
+        else:
+            raise ValueError(f"Cannot determine sample type from TCGA barcode {sample!r} for {code}.")
+    for sample, sample_type in barcode_types.items():
+        s.loc[sample, "type"] = sample_type
+    return s
 
 
 @st.cache_data
